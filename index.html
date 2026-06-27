@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dressed by West</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #000;
+  color: #fff;
+}
+
+header {
+  padding: 20px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.container {
+  padding: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.card {
+  background: #111;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.price {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+button {
+  background: #00ff88;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #111;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+}
+
+.admin {
+  margin-top: 40px;
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>DRESSED BY WEST 🔥</header>
+
+<div class="container">
+
+  <h3>New Drops</h3>
+  <div id="grid" class="grid"></div>
+
+  <div class="admin">
+    <h3>Admin Add Product</h3>
+    <input id="name" placeholder="Name"/>
+    <input id="price" placeholder="Price"/>
+    <input id="image" placeholder="Image URL"/>
+    <button onclick="addProduct()">Add Product</button>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <h3 id="mName"></h3>
+    <p id="mPrice"></p>
+
+    <input id="custName" placeholder="Your Name"/>
+    <input id="custPhone" placeholder="Phone Number"/>
+
+    <button onclick="order()">Order via WhatsApp</button>
+    <button onclick="closeModal()" style="background:red;color:white;">Close</button>
+  </div>
+</div>
+
+<script>
+let products = JSON.parse(localStorage.getItem("products")) || [
+  {
+    name: "Vintage Nike Jacket",
+    price: 12000,
+    image: "https://images.unsplash.com/photo-1520975922284-9c2a1b3f0a5f"
+  },
+  {
+    name: "Retro Jeans",
+    price: 8000,
+    image: "https://images.unsplash.com/photo-1521335629791-ce4aec67dd49"
+  }
+];
+
+let selectedProduct = null;
+
+function render() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  products.forEach((p, i) => {
+    grid.innerHTML += `
+      <div class="card" onclick="openProduct(${i})">
+        <img src="${p.image}" />
+        <h4>${p.name}</h4>
+        <p class="price">UGX ${p.price}</p>
+      </div>
+    `;
+  });
+}
+
+function openProduct(i) {
+  selectedProduct = products[i];
+  document.getElementById("mName").innerText = selectedProduct.name;
+  document.getElementById("mPrice").innerText = "UGX " + selectedProduct.price;
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+function order() {
+  let name = document.getElementById("custName").value;
+  let phone = document.getElementById("custPhone").value;
+
+  if (!selectedProduct) return alert('No product selected');
+  if (!name || !phone) return alert('Please enter your name and phone number');
+
+  let msg = `DRESSED BY WEST ORDER%0A%0AProduct: ${selectedProduct.name}%0APrice: UGX ${selectedProduct.price}%0A%0ACustomer: ${name} - ${phone}`;
+
+  // WhatsApp number set by owner
+  window.open("https://wa.me/256740969377?text=" + msg, "_blank");
+}
+
+function addProduct() {
+  let name = document.getElementById("name").value;
+  let price = document.getElementById("price").value;
+  let image = document.getElementById("image").value;
+
+  if (!name || !price) return alert('Please provide a product name and price');
+
+  products.push({ name, price, image });
+  localStorage.setItem("products", JSON.stringify(products));
+
+  document.getElementById("name").value = '';
+  document.getElementById("price").value = '';
+  document.getElementById("image").value = '';
+
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
